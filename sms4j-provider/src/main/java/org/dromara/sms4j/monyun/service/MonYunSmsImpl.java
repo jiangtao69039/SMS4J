@@ -1,5 +1,6 @@
 package org.dromara.sms4j.monyun.service;
 
+import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.core.util.URLUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
@@ -12,7 +13,7 @@ import org.dromara.sms4j.comm.exception.SmsBlendException;
 import org.dromara.sms4j.comm.utils.SmsUtils;
 import org.dromara.sms4j.monyun.config.MonYunConfig;
 import org.dromara.sms4j.provider.service.AbstractSmsBlend;
-import sun.nio.cs.ext.GBK;
+import java.nio.charset.Charset;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,7 +81,7 @@ public class MonYunSmsImpl  extends AbstractSmsBlend<MonYunConfig> {
             headers.put("Content-Type", Constant.APPLICATION_JSON_UTF8);
             Map<String, Object> body = new LinkedHashMap<>();
             body.put("mobile", phone);
-            body.put("content", URLUtil.encode(messageStr, new GBK()));
+            body.put("content", URLUtil.encode(messageStr, Charset.forName(CharsetUtil.GBK)));
             body.put("apikey", getConfig().getAccessKeySecret());
             SmsResponse smsResponse = convertToResponse(http.postJson(requestUrl, headers, body));
             if(smsResponse.isSuccess() || retry == getConfig().getMaxRetries()){
