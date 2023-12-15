@@ -55,4 +55,6 @@ public abstract class SupplierConstant {
      */
     public static final String LIANLU = "lianlu";
 
+    public static final String MONYUN = "monyun";
+
 }
