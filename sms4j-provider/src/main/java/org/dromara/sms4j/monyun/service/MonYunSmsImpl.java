@@ -32,7 +32,7 @@ public class MonYunSmsImpl  extends AbstractSmsBlend<MonYunConfig> {
         super(config, pool, delayed);
     }
 
-    protected MonYunSmsImpl(MonYunConfig config) {
+    public MonYunSmsImpl(MonYunConfig config) {
         super(config);
     }
 
