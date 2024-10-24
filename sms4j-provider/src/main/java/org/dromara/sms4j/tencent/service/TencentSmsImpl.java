@@ -96,23 +96,28 @@ public class TencentSmsImpl extends AbstractSmsBlend<TencentConfig> {
                 getConfig().getSignature(), templateId, messages);
         String url = Constant.HTTPS_PREFIX + getConfig().getRequestUrl();
 
-        try {
-            SmsResponse smsResponse = getResponse(http.postJson(url, headsMap, requestBody));
-            if(smsResponse.isSuccess() || retry == getConfig().getMaxRetries()){
-                retry = 0;
-                return smsResponse;
+        SmsResponse smsResponse = new SmsResponse();
+        smsResponse.setConfigId(getConfigId());
+        while(retry <= getConfig().getMaxRetries()) {
+            try {
+                return getResponse(http.postJson(url, headsMap, requestBody));
+            } catch (SmsBlendException e) {
+                log.error("发送请求时发生异常:"+e.getMessage());
+                if (retry == getConfig().getMaxRetries()) {
+                    retry = 0;
+                    return smsResponse;
+                }
+                requestRetry(phones, messages, templateId);
             }
-            return requestRetry(phones, messages, templateId);
-        }catch (SmsBlendException e){
-            return requestRetry(phones, messages, templateId);
         }
+        return smsResponse;
     }
 
-    private SmsResponse requestRetry(String[] phones, String[] messages, String templateId) {
+    private void requestRetry(String[] phones, String[] messages, String templateId) {
         http.safeSleep(getConfig().getRetryInterval());
         retry++;
         log.warn("短信第 {" + retry + "} 次重新发送");
-        return getSmsResponse(phones, messages, templateId);
+//        return getSmsResponse(phones, messages, templateId);
     }
 
     private SmsResponse getResponse(JSONObject resJson) {
